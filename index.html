@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en" class="">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saladi Krishna Pavan - HSE Manager</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" xintegrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoVBL5gI9kLmbG4WdAkTzDF/G5V8rA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <style>
+        /* --- Base & Light Mode Styles --- */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* Light gray background */
+            color: #1e293b; /* Dark slate text */
+            transition: background-color 0.3s, color 0.3s;
+        }
+        #resume-content-wrapper {
+             background-color: #ffffff;
+        }
+        .pdf-page {
+            padding: 1.5rem;
+        }
+        .section-title {
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1e293b;
+        }
+        .card {
+            transition: background-color 0.3s;
+            border-radius: 0.75rem;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            background-color: #ffffff;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+        .job-entry {
+            border-left: 3px solid #cbd5e1;
+            padding-left: 1.5rem;
+            margin-bottom: 2rem;
+            position: relative;
+            transition: border-color 0.3s;
+        }
+        .job-entry:last-child {
+            margin-bottom: 0;
+        }
+        .job-entry::before {
+            content: '';
+            position: absolute;
+            left: -0.625rem; /* Adjusted for centering */
+            top: 0.125rem; /* Adjusted for alignment */
+            width: 1.125rem; /* Increased size */
+            height: 1.125rem; /* Increased size */
+            border-radius: 9999px;
+            background-color: #ffffff;
+            border: 4px solid #94a3b8; /* Increased border */
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+        .job-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #1e293b;
+        }
+        .company-name {
+            font-weight: 500;
+            color: #475569;
+        }
+        .company-logo {
+            height: 24px;
+            width: auto;
+            object-fit: contain;
+        }
+        .date-location {
+            font-size: 0.875rem;
+            color: #64748b;
+            margin-bottom: 0.75rem;
+        }
+        ul {
+            list-style-position: outside;
+            padding-left: 1rem;
+        }
+        li {
+            margin-bottom: 0.5rem;
+            color: #334155;
+        }
+        .contact-link {
+             color: #0284c7;
+        }
+        .contact-link:hover {
+            color: #0369a1;
+        }
+        
+        /* --- Dark Mode Styles --- */
+        .dark body { background-color: #020617; color: #cbd5e1; }
+        .dark #resume-content-wrapper { background-color: #0f172a; }
+        .dark .section-title { border-bottom-color: #334155; color: #f1f5f9; }
+        .dark .card { background-color: #1e293b; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.2), 0 2px 4px -2px rgb(0 0 0 / 0.2); }
+        .dark .job-entry { border-left-color: #475569; }
+        .dark .job-entry::before { background-color: #1e293b; border-color: #64748b; }
+        .dark .job-title { color: #f1f5f9; }
+        .dark .company-name { color: #94a3b8; }
+        .dark .date-location { color: #94a3b8; }
+        .dark li { color: #cbd5e1; }
+        .dark .contact-link { color: #38bdf8; }
+        .dark .contact-link:hover { color: #7dd3fc; }
+        .dark .text-slate-800 { color: #e2e8f0; }
+        .dark .text-slate-900 { color: #f8fafc; }
+        .dark .text-slate-600 { color: #94a3b8; }
+        .dark .gov-logo-dark { filter: invert(1) brightness(2); }
+    </style>
+</head>
+<body>
+
+    <!-- Controls -->
+    <div id="controls" class="max-w-4xl mx-auto p-4 sm:px-6 lg:px-8 flex justify-end items-center gap-4">
+        <button id="download-btn" class="text-sm font-medium contact-link">Download PDF</button>
+        <div class="flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-sun-fill text-slate-500" viewBox="0 0 16 16">
+              <path d="M8 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0zm0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13zm8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5zM3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8zm10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0zm-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0zm9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707zM4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708z"/>
+            </svg>
+            <label for="dark-mode-toggle" class="flex items-center cursor-pointer mx-2">
+                <div class="relative">
+                    <input type="checkbox" id="dark-mode-toggle" class="sr-only">
+                    <div class="block bg-slate-300 dark:bg-slate-600 w-10 h-6 rounded-full"></div>
+                    <div class="dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition"></div>
+                </div>
+            </label>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-moon-fill text-slate-500" viewBox="0 0 16 16">
+              <path d="M6 .278a.768.768 0 0 1 .08.858 7.208 7.208 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277.527 0 1.04-.055 1.533-.16a.787.787 0 0 1 .81.316.733.733 0 0 1-.031.893A8.349 8.349 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.752.752 0 0 1 6 .278z"/>
+            </svg>
+        </div>
+    </div>
+    
+    <div id="resume-content-wrapper" class="max-w-4xl mx-auto">
+        
+        <div class="pdf-page" id="page1">
+            <!-- Header Section -->
+            <header class="text-center mb-10">
+                <h1 class="text-3xl font-bold">Saladi Krishna Pavan, <span class="text-2xl font-medium text-slate-500 dark:text-slate-400">iDipNEBOSH</span></h1>
+                <h2 class="text-lg font-medium text-sky-600 dark:text-sky-500 mt-2">Health, Safety & Environment (HSE) Manager</h2>
+                <div class="mt-4 flex justify-center items-center gap-x-6 gap-y-2 flex-wrap text-sm text-slate-600">
+                    <span>UAE</span>
+                    <span class="hidden sm:inline">|</span>
+                    <span>+971 50 558 9002</span>
+                    <span class="hidden sm:inline">|</span>
+                    <span>pavanhse29@gmail.com</span>
+                    <span class="hidden sm:inline">|</span>
+                    <a href="https://www.linkedin.com/in/krisps" target="_blank" class="contact-link font-medium">linkedin.com/in/krisps</a>
+                </div>
+            </header>
+
+            <main>
+                <!-- Professional Summary -->
+                <div class="card p-6 text-center">
+                     <h3 class="text-xl font-semibold">Driving Operational Excellence & Zero-Harm Culture</h3>
+                    <p class="text-base leading-relaxed mt-3 max-w-3xl mx-auto">
+                        A results-driven HSE leader with 12+ years of experience architecting and implementing robust safety management systems across high-hazard industries, including oil & gas, power generation, and major construction. Proven ability to reduce incident rates, ensure multi-site ISO 45001/14001 compliance, and champion a proactive, world-class safety culture on complex EPC and brownfield projects.
+                    </p>
+                </div>
+                
+                <!-- Key Certifications -->
+                <div class="card p-6">
+                    <h3 class="section-title !text-lg">Key Certifications</h3>
+                     <ul class="list-disc list-outside pl-4 text-sm space-y-2 grid sm:grid-cols-2 gap-x-6">
+                        <li>NEBOSH International Diploma in Occupational Health & Safety</li>
+                        <li>Highfield Level 3 International Award in Delivering Training (IADT)</li>
+                        <li>ISO 45001:2018 Lead Auditor</li>
+                        <li>HABC Level 2 International Award in Fire Safety</li>
+                        <li>IOSH Managing Safely</li>
+                        <li>HABC Level 3 International Award in First Aid at Work</li>
+                    </ul>
+                </div>
+
+                <!-- Areas of Expertise -->
+                <div class="card p-6">
+                    <h3 class="section-title !text-lg">Areas of Expertise</h3>
+                    <div class="grid md:grid-cols-2 gap-x-8 gap-y-4 text-sm">
+                        <div>
+                            <h4 class="font-semibold text-slate-800 mb-2">HSE Leadership & Strategy</h4>
+                            <ul class="list-disc list-outside pl-4 space-y-1">
+                                <li>HSE Strategy & Policy Development</li>
+                                <li>Safety Culture Transformation</li>
+                                <li>Contractor & Stakeholder Management</li>
+                            </ul>
+                        </div>
+                         <div>
+                            <h4 class="font-semibold text-slate-800 mb-2">Technical Risk Management</h4>
+                             <ul class="list-disc list-outside pl-4 space-y-1">
+                                <li>Risk Assessment & Mitigation (HAZID/HAZOP)</li>
+                                <li>Incident Investigation & Root Cause Analysis (RCA)</li>
+                                 <li>Process Safety Management (PSM)</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-slate-800 mb-2">Systems & Compliance</h4>
+                             <ul class="list-disc list-outside pl-4 space-y-1">
+                                <li>HSE Management Systems (ISO 45001/14001)</li>
+                                <li>Regulatory Compliance & Auditing</li>
+                                <li>Continuous Improvement Initiatives</li>
+                            </ul>
+                        </div>
+                         <div>
+                            <h4 class="font-semibold text-slate-800 mb-2">Specialized Expertise</h4>
+                             <ul class="list-disc list-outside pl-4 space-y-1">
+                                <li>Human Factors & Safety Leadership (HSE-HF)</li>
+                                <li>Sustainability & ESG Integration</li>
+                                <li>Digital HSE Transformation (Power BI, iAuditor)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <div class="pdf-page" id="page2">
+             <!-- Professional Experience -->
+            <div class="card">
+                <h3 class="section-title">Professional Experience</h3>
+                <div class="job-entry">
+                    <div class="flex items-center gap-3 mb-1">
+                        <h4 class="job-title">HSEQ Manager</h4>
+                        <img src="https://i.imgur.com/JSp88mY.png" alt="e& enterprise logo" class="company-logo" style="height: 20px;">
+                    </div>
+                    <p class="company-name">e& enterprise (Formerly Etisalat)</p>
+                    <p class="date-location">Abu Dhabi, UAE | Nov 2021 – Present</p>
+                    <ul>
+                        <li>Provide strategic HSE leadership across a portfolio of 400+ high-risk electrical substations, ensuring compliance with TAQA, Transco, and FEWA standards.</li>
+                        <li>Architected and directed the multi-site implementation of the ISO 45001 & ISO 14001 management systems, achieving 100% certification success on first attempt.</li>
+                        <li>Mentor and lead a cross-functional team of 15+ HSE professionals, driving a high-performance, zero-harm culture through targeted coaching and BBS programs.</li>
+                    </ul>
+                </div>
+                <div class="job-entry">
+                    <div class="flex items-center gap-3 mb-1">
+                        <h4 class="job-title">Environmental Lead</h4>
+                        <img src="https://i.imgur.com/5GvI2S6.png" alt="Strabag-Ozkar logo" class="company-logo">
+                    </div>
+                    <p class="company-name">Strabag-Ozkar</p>
+                    <p class="date-location">Dubai & Abu Dhabi, UAE | May 2019 – Oct 2021</p>
+                    <ul>
+                        <li>Led all environmental compliance and risk management programs for the landmark DEWA Hatta Dam hydroelectric project, a critical national infrastructure asset.</li>
+                        <li>Orchestrated complex risk mitigation strategies for high-hazard activities including tunnel blasting and confined space entry in an ecologically sensitive mountain reserve.</li>
+                        <li>Developed and implemented the Construction Environmental Management Plan (CEMP), securing regulatory approval from Dubai Municipality and other key authorities.</li>
+                    </ul>
+                </div>
+                 <div class="job-entry">
+                    <div class="flex items-center gap-3 mb-1">
+                        <h4 class="job-title">HSE Engineer</h4>
+                        <img src="https://i.imgur.com/IeJbnWO.png" alt="CSCEC logo" class="company-logo" style="height: 28px;">
+                    </div>
+                    <p class="company-name">CSCEC – Al Aweer Power Plant H, Phase IV</p>
+                    <p class="date-location">Dubai, UAE | Jun 2019 – Oct 2020</p>
+                    <ul>
+                        <li>Managed HSE for critical EPC tie-ins on a live combined-cycle gas turbine project, ensuring zero disruption to ongoing power generation through meticulous SIMOPS planning.</li>
+                        <li>Drove the safety program that was instrumental in the project achieving a British Safety Council (BSC) Gold Star Audit with zero non-conformities.</li>
+                        <li>Conducted comprehensive compliance audits against DEWA standards, identifying and closing out potential gaps in the Permit-to-Work and LOTO systems.</li>
+                    </ul>
+                </div>
+                <div class="job-entry">
+                    <div class="flex items-center gap-3 mb-1">
+                        <h4 class="job-title">HSE Advisor (Corporate)</h4>
+                        <img src="https://i.imgur.com/3lpwOpq.png" alt="Allmar Inc. logo" class="company-logo">
+                    </div>
+                    <p class="company-name">Allmar Inc.</p>
+                    <p class="date-location">Toronto, Canada | Oct 2017 – Mar 2019</p>
+                    <ul>
+                        <li>Led the corporate-wide implementation and certification of the Certificate of Recognition (COR) safety program across 10 company branches in Canada.</li>
+                        <li>Developed and delivered standardized HSE training modules for fall protection, powered tools, and hazard communication, reducing incident frequency.</li>
+                        <li>Performed detailed noise mapping and environmental monitoring in factory settings to engineer out long-term occupational health risks.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="pdf-page" id="page3">
+             <div class="card">
+                <h3 class="section-title">Professional Experience (Continued)</h3>
+                 <div class="job-entry">
+                    <div class="flex items-center gap-3 mb-1">
+                        <h4 class="job-title">Jr. OHS Consultant (Corporate)</h4>
+                        <img src="https://i.imgur.com/qAh5bNV.png" alt="Government of Newfoundland & Labrador logo" class="company-logo gov-logo-dark" style="height: 28px;">
+                    </div>
+                    <p class="company-name">Government of Newfoundland & Labrador</p>
+                    <p class="date-location">St. John’s, Canada | Jan 2017 – Sep 2017</p>
+                    <ul>
+                        <li>Conducted high-level HSE assurance audits for over 50 public infrastructure projects, influencing provincial safety policy and contractor selection criteria.</li>
+                        <li>Analyzed incident data across the portfolio to develop provincial safety alerts and performance dashboards for senior government stakeholders.</li>
+                         <li>Supported the legal compliance program by interpreting and disseminating updates to provincial OHS legislation to all project teams.</li>
+                    </ul>
+                </div>
+                 <div class="job-entry">
+                    <div class="flex items-center gap-3 mb-1">
+                        <h4 class="job-title">Project Engineer</h4>
+                        <img src="https://i.imgur.com/1pq1GFl.png" alt="Irving Oil logo" class="company-logo">
+                    </div>
+                    <p class="company-name">Irving Oil</p>
+                    <p class="date-location">Halifax, Canada | Jan 2015 – Sep 2016</p>
+                    <ul>
+                        <li>Oversaw all HSE aspects for critical path engineering activities during terminal tank renovations and planned shutdowns in a live oil & gas facility.</li>
+                        <li>Ensured strict compliance with OSHA and company Process Safety Management (PSM) standards for high-risk operations like hot work and underwater welding.</li>
+                        <li>Developed and implemented job safety analyses (JSAs) for complex tasks, directly contributing to an incident-free project execution.</li>
+                    </ul>
+                </div>
+                <div class="job-entry">
+                    <div class="flex items-center gap-3 mb-1">
+                        <h4 class="job-title">Electrical Technologist (Internship)</h4>
+                        <img src="https://i.imgur.com/iRSra5w.png" alt="Schlumberger logo" class="company-logo">
+                    </div>
+                    <p class="company-name">Schlumberger</p>
+                    <p class="date-location">Qatar | Jun 2013 – Sep 2013</p>
+                    <ul>
+                        <li>Contributed to the safe execution of a major refinery turnaround by enforcing stringent electrical safety protocols and LOTO procedures.</li>
+                        <li>Performed field-level hazard assessments and safety observations, reporting findings to senior HSE personnel for corrective action.</li>
+                        <li>Assisted in the coordination of emergency response drills, enhancing team readiness for critical scenarios.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Education -->
+            <div class="card">
+                <h3 class="section-title">Education</h3>
+                <div class="job-entry">
+                    <div class="flex items-center gap-3 mb-1">
+                        <h4 class="job-title">Postgraduate Diploma in Health and Safety Management</h4>
+                        <img src="https://i.imgur.com/dgynIDS.png" alt="College of the North Atlantic logo" class="company-logo" style="height: 28px;">
+                    </div>
+                    <p class="company-name">College of the North Atlantic, Canada</p>
+                </div>
+                <div class="job-entry">
+                     <div class="flex items-center gap-3 mb-1">
+                        <h4 class="job-title">Diploma in Electrical Engineering Technology</h4>
+                        <img src="https://i.imgur.com/dgynIDS.png" alt="College of the North Atlantic logo" class="company-logo" style="height: 28px;">
+                    </div>
+                    <p class="company-name">College of the North Atlantic, Qatar/Canada</p>
+                </div>
+            </div>
+            <footer class="text-center mt-10 text-sm text-slate-500">
+                <p>References available upon request.</p>
+            </footer>
+        </div>
+    </div>
+
+    <script>
+        // Dark Mode Toggle
+        const darkModeToggle = document.getElementById('dark-mode-toggle');
+        const htmlElement = document.documentElement;
+        const dot = document.querySelector('.dot');
+
+        const applyTheme = () => {
+            if (darkModeToggle.checked) {
+                htmlElement.classList.add('dark');
+                dot.style.transform = 'translateX(100%)';
+            } else {
+                htmlElement.classList.remove('dark');
+                dot.style.transform = 'translateX(0)';
+            }
+        };
+
+        darkModeToggle.addEventListener('change', applyTheme);
+        applyTheme();
+        
+        // PDF Download
+        const downloadBtn = document.getElementById('download-btn');
+        const controls = document.getElementById('controls');
+
+        downloadBtn.addEventListener('click', async () => {
+            controls.style.display = 'none';
+            
+            const isDarkMode = htmlElement.classList.contains('dark');
+            if (isDarkMode) {
+                htmlElement.classList.remove('dark');
+            }
+
+            await new Promise(resolve => setTimeout(resolve, 100));
+
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            
+            const pages = document.querySelectorAll('.pdf-page');
+
+            for (let i = 0; i < pages.length; i++) {
+                const page = pages[i];
+                try {
+                    const canvas = await html2canvas(page, {
+                        scale: 2,
+                        useCORS: true,
+                        backgroundColor: '#ffffff'
+                    });
+
+                    const imgData = canvas.toDataURL('image/png');
+                    const pageHeight = pdf.internal.pageSize.getHeight();
+                    const imgWidth = pdfWidth;
+                    const imgHeight = canvas.height * imgWidth / canvas.width;
+                    
+                    let heightLeft = imgHeight;
+                    let position = 0;
+
+                    if (i > 0) {
+                        pdf.addPage();
+                    }
+                    
+                    pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+
+                } catch (error) {
+                    console.error(`Error capturing page ${i + 1}:`, error);
+                }
+            }
+
+            pdf.save('krishna_Resume_2025.pdf');
+
+            if (isDarkMode) {
+                htmlElement.classList.add('dark');
+            }
+            controls.style.display = 'flex';
+        });
+    </script>
+
+</body>
+</html>
+
